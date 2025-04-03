@@ -1,0 +1,504 @@
+/*
+############# ORAR GENERAL CSS ############## */
+
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #fafafa;
+  margin: 0;
+  padding: 0;
+}
+
+
+h1, h2 {
+  margin: 0;
+}
+
+/* Stil pentru tabel */
+.table td, .table th {
+  font-size: 12px;
+  padding: 12px;
+  vertical-align: middle;
+}
+
+/* Stil pentru antetul tabelului */
+.table thead th {
+  background-color: #f2f2f2;
+  text-transform: uppercase;
+  font-size: 10px;
+  padding-top: 12px;
+  padding-left: 80px;
+  padding-right: 80px;
+  padding-bottom: 12px;
+}
+
+/* Clasa pentru antetul zilelor */
+.day-header {
+  width: 300px; /* lățime mărită */
+  text-align: center;
+  font-size: 10px;
+  padding: 12px;
+  background-color: #f2f2f2;
+  text-transform: uppercase;
+}
+
+/* Hover pentru rândurile tabelului */
+.table-hover tbody tr:hover {
+  background-color: #f0f0f0;
+}
+
+/* Stil pentru celulele editabile */
+.editable {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.editable:hover {
+  background-color: #ddd;
+  border-radius: 3px;
+  transition: 0.2s;
+}
+
+/* Spațiere suplimentară sub antetul tabelului */
+.table-responsive {
+  margin-top: 20px;
+}
+
+/* Suprascrie bordurile pentru celulele din antet */
+table.table-bordered > thead > tr > th {
+  border: 2px solid #000 !important;
+}
+
+/* Suprascrie bordurile pentru celulele din corpul tabelului */
+table.table-bordered > tbody > tr > td {
+  border: 2px solid #000 !important;
+}
+
+ 
+/* ############## CASETA TOP ##############*/
+
+
+.table-orar-clasa {
+  max-width: 1250px;
+  margin: 0 auto;
+  border: 2px solid #ccc;
+  background-color: #f8f9fa;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.table-orar-clasa table {
+  width: 100%;
+}
+
+
+.orar-topbar {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  max-width: 1000px;
+  margin: 30px auto 10px auto;
+}
+
+.orar-topbar .btn {
+  padding: 2px 10px;
+  margin: 3px 3px;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  min-width: 72px;
+  border-radius: 6px;
+  margin-right: 6px;  /* 👈 adăugăm spațiu între butoane */
+}
+
+.orar-subtitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #222;
+}
+
+.orar-subtitle2 {
+  font-size: 16px;
+  font-weight: 400;
+  color: #555;
+}
+
+
+
+
+
+/* ##########  LOGIN CSS ##########*/
+
+/* Login container modernizat */
+.login-container {
+  max-width: 400px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+body {
+  background: linear-gradient(to right, #f0f4ff, #e6f7ff);
+}
+
+/* Inputuri stilizate */
+.login-container .form-control {
+  border-radius: 8px;
+  padding: 10px 14px;
+  border: 1px solid #ced4da;
+  transition: all 0.3s ease;
+}
+
+.login-container .form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+
+ 
+
+
+
+/* Butonul de login */
+.login-container .btn-primary {
+  background-color: #007bff;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+
+  
+}
+
+.login-container .btn-primary:hover {
+  background-color: #0056b3;
+  
+}
+
+/* Antet login */
+.login-container h2 {
+  font-weight: bold;
+  color: #333;
+}
+
+/* Alertă */
+.alert-danger {
+  border-radius: 8px;
+}
+
+/* Animație la încărcare */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+.password-wrapper .position-relative {
+  position: relative;
+}
+
+.password-wrapper .toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 30px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #999;
+  font-size: 18px;
+  line-height: 1;
+  z-index: 3;
+  transition: color 0.3s ease;
+}
+
+
+.toggle-password:hover {
+  color: #007bff;
+}
+
+.login-container h2  {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #222;
+}
+
+.login-container h4 {
+  font-size: 20px !important;
+  font-weight: normal;
+  color: #555;
+  margin-top: 25px;
+  margin-bottom: 8px;
+}
+
+
+
+/*############ FULLSCREEN ##############*/
+
+body.orar-fullscreen-body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #eef6ff;
+  user-select: none;
+}
+
+.wrapper-center {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  cursor: grab;
+  position: relative;
+}
+
+.zoom-container {
+  transform-origin: top left;
+  transition: transform 0.3s ease;
+  padding: 30px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.fullscreen-controls {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 9999;
+  display: flex;
+  gap: 10px;
+}
+
+.fullscreen-controls button,
+.fullscreen-controls a {
+  background: #f2f2f2;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  color: #000;
+}
+
+
+
+
+/* ############# DIRECTOR ############*/
+
+/* ################# RAPOARTE DIRECTOR ################## */
+
+.rapoarte-container h3 {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.rapoarte-container .card {
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  border: none;
+}
+
+.rapoarte-container .card-header {
+  font-weight: bold;
+  font-size: 16px;
+  padding: 12px 20px;
+}
+
+.rapoarte-container .table {
+  font-size: 13px;
+}
+
+.rapoarte-container .btn-outline-primary,
+.rapoarte-container .btn-outline-success {
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.rapoarte-container .table-warning {
+  background-color: #fff8dc !important;
+}
+.rapoarte-container .table-danger {
+  background-color: #ffe4e1 !important;
+}
+
+.rapoarte-container .card-body {
+  padding: 20px;
+}
+
+.rapoarte-container .table th,
+.rapoarte-container .table td {
+  vertical-align: middle;
+}
+
+
+
+
+
+/*########### DETALII PROFESORI  ###########*/
+
+
+.detalii-profesor-container {
+  max-width: 960px;
+  margin: 50px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.detalii-profesor-container h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 24px;
+  color: #333;
+}
+
+.card-header,
+.card-info,
+.card-form,
+.card-footer {
+  margin-bottom: 25px;
+}
+
+.form-select {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+}
+
+.card-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.card-table th,
+.card-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+  font-size: 15px;
+}
+
+.card-table th {
+  background-color: #f0f8ff;
+  font-weight: bold;
+  color: #333;
+}
+
+.btn-back {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-back:hover {
+  background-color: #0056b3;
+}
+
+
+.dropdown-menu .dropdown-item {
+  font-size: 14px;
+  padding: 8px 16px;
+}
+
+
+.orar-buttons-group .btn {
+  margin: 4px 8px 4px 0; /* sus-dreapta-jos-stânga */
+  min-width: 100px;
+}
+
+
+@media (max-width: 768px) {
+  .zoom-out-pe-mobil {
+    transform: scale(0.85);
+    transform-origin: top left;
+    display: inline-block;
+  }
+}
+
+.logo-wrapper {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: white;
+  border: 3px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  margin: 0 auto;
+}
+
+.logo-wrapper img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+
+.logo-wrapper-small {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: white;
+  border: 2px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.logo-wrapper-small img {
+  max-width: 70%;
+  max-height: 70%;
+  object-fit: contain;
+}
+
+.highlight-profesor {
+  background-color: #c8e6c9 !important;  /* verde deschis */
+  font-weight: bold;
+  border: 2px solid #2e7d32;
+}
+
+
+
+.user-badge-top {
+  font-size: 13px;
+  color: #555;
+  background-color: #f2f2f2;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
+
+.user-badge-top-left {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+}

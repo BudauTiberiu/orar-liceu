@@ -1,0 +1,6 @@
+flask
+mysql-connector-python
+fpdf
+pandas
+xlsxwriter
+gunicorn

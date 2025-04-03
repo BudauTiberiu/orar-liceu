@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <!-- AICI -->
+  <title>📊 Rapoarte Director</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="orar-topbar px-3 py-2 mb-4">
+    <div class="container-fluid">
+      <div class="d-flex flex-wrap justify-content-between align-items-center">
+        
+        <!-- Stânga: logo + titlu -->
+        <div class="d-flex align-items-center mb-2 mb-md-0">
+          <div class="logo-wrapper-small mr-3">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+          </div>
+          <div>
+            <h5 class="mb-0 font-weight-bold">Liceul Alexandru cel Bun</h5>
+            <small class="text-muted">Panou Director - Rapoarte</small>
+          </div>
+        </div>
+  
+        <!-- Dreapta: butoane -->
+        <div class="d-flex flex-wrap gap-2">
+          <a href="{{ url_for('index') }}" class="btn btn-primary btn-sm">⮐ Înapoi la Orar</a>
+          {% if session.get('role') == 'director' %}
+            <a href="{{ url_for('detalii_profesor') }}" class="btn btn-outline-primary btn-sm">📋 Detalii profesori</a>
+          {% endif %}
+          <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary btn-sm">Logout</a>
+        </div>
+  
+      </div>
+    </div>
+  </div>
+  
+  
+      
+
+<div class="container rapoarte-container">
+  <h3 class="text-center mb-4">📊 Panou de Rapoarte – Director</h3>
+
+  <!-- Secțiune Statistici Sumare -->
+  <div class="row text-center mb-4">
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title">👨‍🏫 Profesori</h5>
+          <p class="h4">{{ profesori|length }}</p>
+          <small>Total profesori activi</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title">🏫 Clase</h5>
+          <p class="h4">{{ clase|length }}</p>
+          <small>Clase programate</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title">🏠 Săli</h5>
+          <p class="h4">{{ sali|length }}</p>
+          <small>Săli utilizate</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title">📅 Ore totale</h5>
+          <p class="h4">
+            {{
+              profesori | map(attribute='total_ore') | sum
+            }}
+          </p>
+          <small>Ore programate săptămânal</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grafic Distribuție ore per profesor -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header bg-info text-white">
+      Distribuție Ore / Profesor
+    </div>
+    <div class="card-body">
+      <canvas id="profChart" height="120"></canvas>
+    </div>
+  </div>
+
+  <!-- Grad de utilizare a sălilor -->
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-success text-white">
+      Utilizare săli (%) din totalul disponibil
+    </div>
+    <div class="card-body">
+      {% for sala in sali %}
+        {% set procent = (sala.ore / 30 * 100) | round(0, 'floor') %}
+        <div class="mb-3">
+          <div class="d-flex justify-content-between">
+            <strong>{{ sala.nume }} <small class="text-muted">({{ sala.tip }})</small></strong>
+            <span>{{ procent }}%</span>
+          </div>
+          <div class="progress" style="height: 18px;">
+            <div class="progress-bar 
+              {% if procent >= 80 %}bg-success
+              {% elif procent >= 50 %}bg-info
+              {% elif procent >= 30 %}bg-warning
+              {% else %}bg-danger{% endif %}" 
+              role="progressbar" 
+              style="width: {{ procent }}%;">
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  
+
+  <!-- Situație Clase - Distribuție Ore / Clasă -->
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+      Distribuție Ore / Clasă
+      <span class="badge badge-warning">
+        {{ clase | selectattr('total_ore', 'lt', 30) | list | length }} clase sub 30 ore
+      </span>
+    </div>
+    <div class="card-body">
+      <canvas id="claseChart" height="120"></canvas>
+    </div>
+  </div>
+  
+
+
+
+  <!-- Butoane de export -->
+  <div class="text-center my-4">
+    <a href="{{ url_for('export_pdf') }}" class="btn btn-outline-primary mr-2">Exportă Orar PDF</a>
+    <a href="{{ url_for('export_excel') }}" class="btn btn-outline-success">Exportă Orar Excel</a>
+  </div>
+</div>
+
+<script>
+const ctx = document.getElementById('profChart').getContext('2d');
+const profChart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: [{% for p in profesori %}"{{ p.nume }}",{% endfor %}],
+    datasets: [{
+      label: 'Total ore',
+      data: [{% for p in profesori %}{{ p.total_ore }},{% endfor %}],
+      backgroundColor: 'rgba(54, 162, 235, 0.7)',
+      borderColor: 'rgba(54, 162, 235, 1)',
+      borderWidth: 1
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: true }
+    },
+    scales: {
+      x: { beginAtZero: true }
+    }
+  }
+});
+</script>
+
+<script>
+    const claseCtx = document.getElementById('claseChart').getContext('2d');
+    const claseChart = new Chart(claseCtx, {
+      type: 'bar',
+      data: {
+        labels: [{% for c in clase %}"{{ c.nume }}",{% endfor %}],
+        datasets: [{
+          label: 'Total ore',
+          data: [{% for c in clase %}{{ c.total_ore }},{% endfor %}],
+          backgroundColor: [{% for c in clase %}
+            {% if c.total_ore < 30 %}
+              'rgba(255, 193, 7, 0.7)',
+            {% else %}
+              'rgba(40, 167, 69, 0.7)',
+            {% endif %}
+          {% endfor %}],
+          borderColor: 'rgba(0,0,0,0.1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: true }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 5 }
+          }
+        }
+      }
+    });
+    </script>
+    
+
+</body>
+</html>

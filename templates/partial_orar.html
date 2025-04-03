@@ -1,0 +1,37 @@
+<table class="table table-bordered table-hover text-center">
+    <thead class="thead-light">
+      <tr>
+        <th rowspan="2" class="align-middle">Clasă</th>
+        {% for day in days %}
+          <th colspan="6" class="align-middle">{{ day }}</th>
+        {% endfor %}
+      </tr>
+      <tr>
+        {% for day in days %}
+          {% for hr in hours %}
+            <th>{{ hr }}</th>
+          {% endfor %}
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for cls in classes %}
+        <tr>
+          <td class="font-weight-bold">{{ cls }}</td>
+          {% for day in days %}
+            {% for hr in hours %}
+              {% set cell = timetable.get((cls, day, hr)) %}
+              <td>
+                {% if cell %}
+                  {{ cell[0] }}<br>{{ cell[1] }}<br>{{ cell[2] }}
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+            {% endfor %}
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  

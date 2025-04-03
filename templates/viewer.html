@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>Vizualizare Orar - Fullscreen</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="orar-fullscreen-body">
+
+  <!-- Bara de control (zoom + back) -->
+  <div class="fullscreen-controls" id="controls">
+    <a href="{{ url_for('index') }}" class="fullscreen-btn">⮐ Înapoi</a>
+    <button onclick="zoomOut()">–</button>
+    <button onclick="resetZoom()">Reset</button>
+    <button onclick="zoomIn()">+</button>
+  </div>
+
+  <!-- Zona de zoom + scroll -->
+  <div class="wrapper-center" id="wrapper">
+    <div class="zoom-container" id="zoomContainer">
+      {% include 'partial_orar.html' %}
+    </div>
+  </div>
+  <script>
+    let zoom = 1.0;
+    let offsetX = -10; // poziție spre stânga (Luni)
+    let offsetY = 100;
+  
+    const zoomContainer = document.getElementById('zoomContainer');
+  
+    function applyTransform() {
+      zoomContainer.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${zoom})`;
+    }
+  
+    // Aplicăm zoom inițial + poziționare pe Luni
+    window.onload = () => {
+      applyTransform();
+    };
+  
+    // Zoom
+    function zoomIn() {
+      zoom += 0.1;
+      applyTransform();
+    }
+  
+    function zoomOut() {
+      zoom = Math.max(0.3, zoom - 0.1);
+      applyTransform();
+    }
+  
+    function resetZoom() {
+      zoom = 1.6;
+      offsetX = -250;
+      offsetY = 0;
+      applyTransform();
+    }
+  
+    // Pan cu mouse-ul
+    let isPanning = false;
+    let startX, startY;
+  
+    document.addEventListener('mousedown', (e) => {
+      isPanning = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      document.body.style.cursor = 'grabbing';
+    });
+  
+    document.addEventListener('mouseup', () => {
+      isPanning = false;
+      document.body.style.cursor = 'default';
+    });
+  
+    document.addEventListener('mousemove', (e) => {
+      if (!isPanning) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      offsetX += dx;
+      offsetY += dy;
+      startX = e.clientX;
+      startY = e.clientY;
+      applyTransform();
+    });
+  
+    // Auto-hide controls
+    const controls = document.getElementById('controls');
+    let timer;
+    window.addEventListener('mousemove', () => {
+      controls.classList.remove('hidden');
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        controls.classList.add('hidden');
+      }, 3000);
+    });
+  </script>
+  
+  
+</body>
+</html>

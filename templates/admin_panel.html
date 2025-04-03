@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <title>Panou Administrare</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">🔧 Panou Administrare</h2>
+      <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">🔙 Înapoi la orar</a>
+    </div>
+
+    <!-- Toggle secțiuni -->
+    <div class="btn-group mb-4 w-100 flex-wrap" role="group">
+      <button type="button" class="btn btn-outline-primary active" data-section="prof">👨‍🏫 Profesor</button>
+      <button type="button" class="btn btn-outline-success" data-section="elev">👨‍🎓 Elev</button>
+      <button type="button" class="btn btn-outline-warning" data-section="materie">📘 Materie</button>
+      <button type="button" class="btn btn-outline-info" data-section="sala">🏫 Sală</button>
+    </div>
+
+    <!-- PROFESORI -->
+    <div id="section-prof" class="section-form">
+      <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white">👨‍🏫 Adaugă Profesor</div>
+        <div class="card-body">
+          <form method="POST" class="row g-3">
+            <input type="hidden" name="submit_prof">
+            <div class="col-md-4">
+              <input type="text" class="form-control" name="nume" placeholder="Nume profesor" required>
+            </div>
+            <div class="col-md-4">
+              <input type="text" class="form-control" name="materie" placeholder="Materie" required>
+            </div>
+            <div class="col-md-2">
+              <input type="text" class="form-control" name="username" placeholder="Username" required>
+            </div>
+            <div class="col-md-2">
+              <input type="text" class="form-control" name="parola" placeholder="Parolă" required>
+            </div>
+            <div class="col-12 text-end">
+              <button type="submit" class="btn btn-success">Adaugă profesor</button>
+            </div>
+          </form>
+
+          <hr>
+          <h5>📋 Profesori existenți:</h5>
+          <ul class="list-group">
+            {% for name, subject in teachers %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ name }}
+                <div class="d-flex align-items-center">
+                  <span class="badge bg-secondary me-2">{{ subject }}</span>
+                  <form method="POST" style="display:inline;">
+                    <input type="hidden" name="delete_type" value="profesor">
+                    <input type="hidden" name="delete_name" value="{{ name }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Sigur vrei să ștergi profesorul {{ name }}?')">🗑️</button>
+                  </form>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ELEVI -->
+    <div id="section-elev" class="section-form d-none">
+      <div class="card shadow mb-4">
+        <div class="card-header bg-success text-white">👨‍🎓 Adaugă Elev</div>
+        <div class="card-body">
+          <form method="POST" class="row g-3">
+            <input type="hidden" name="submit_elev">
+            <div class="col-md-4">
+              <input type="text" class="form-control" name="username" placeholder="Username" required>
+            </div>
+            <div class="col-md-4">
+              <input type="text" class="form-control" name="parola" placeholder="Parolă" required>
+            </div>
+            <div class="col-md-4">
+              <select name="clasa" class="form-select" required>
+                <option value="" disabled selected>Alege clasa</option>
+                {% for c in classes %}
+                  <option value="{{ c }}">{{ c }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-12 text-end">
+              <button type="submit" class="btn btn-success">Adaugă elev</button>
+            </div>
+          </form>
+
+          <hr>
+          <h5>📋 Elevi existenți:</h5>
+          <ul class="list-group">
+            {% for username, cls in elevi %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ username }}
+                <div class="d-flex align-items-center">
+                  <span class="badge bg-secondary me-2">{{ cls }}</span>
+                  <form method="POST" style="display:inline;">
+                    <input type="hidden" name="delete_type" value="elev">
+                    <input type="hidden" name="delete_name" value="{{ username }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Sigur vrei să ștergi elevul {{ username }}?')">🗑️</button>
+                  </form>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- MATERII -->
+    <div id="section-materie" class="section-form d-none">
+      <div class="card shadow mb-4">
+        <div class="card-header bg-warning text-dark">📘 Adaugă Materie</div>
+        <div class="card-body">
+          <form method="POST" class="row g-3">
+            <input type="hidden" name="submit_materi">
+            <div class="col-md-8">
+              <input type="text" class="form-control" name="materie_noua" placeholder="Nume materie" required>
+            </div>
+            <div class="col-md-4 text-end">
+              <button type="submit" class="btn btn-warning">Adaugă materie</button>
+            </div>
+          </form>
+
+          <hr>
+          <h5>📓 Materii existente:</h5>
+          <ul class="list-group">
+            {% for m in materii %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ m }}
+                <form method="POST" style="display:inline;">
+                  <input type="hidden" name="delete_type" value="materie">
+                  <input type="hidden" name="delete_name" value="{{ m }}">
+                  <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Sigur vrei să ștergi materia {{ m }}?')">🗑️</button>
+                </form>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SĂLI -->
+    <div id="section-sala" class="section-form d-none">
+      <div class="card shadow mb-4">
+        <div class="card-header bg-info text-white">🏫 Adaugă Sală</div>
+        <div class="card-body">
+          <form method="POST" class="row g-3">
+            <input type="hidden" name="submit_sala">
+            <div class="col-md-6">
+              <input type="text" class="form-control" name="sala" placeholder="Nume sală" required>
+            </div>
+            <div class="col-md-4">
+              <select name="tip" class="form-select" required>
+                <option value="" disabled selected>Tip sală</option>
+                <option>obișnuită</option>
+                <option>laborator</option>
+                <option>sport</option>
+                <option>specială</option>
+              </select>
+            </div>
+            <div class="col-md-2 text-end">
+              <button type="submit" class="btn btn-info">Adaugă sală</button>
+            </div>
+          </form>
+
+          <hr>
+          <h5>🏫 Săli existente:</h5>
+          <ul class="list-group">
+            {% for name, tip in sali %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ name }}
+                <div class="d-flex align-items-center">
+                  <span class="badge bg-secondary me-2">{{ tip }}</span>
+                  <form method="POST" style="display:inline;">
+                    <input type="hidden" name="delete_type" value="sala">
+                    <input type="hidden" name="delete_name" value="{{ name }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Sigur vrei să ștergi sala {{ name }}?')">🗑️</button>
+                  </form>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Script toggle secțiuni -->
+  <script>
+    document.querySelectorAll('.btn-group .btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.btn-group .btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const section = btn.dataset.section;
+        document.querySelectorAll('.section-form').forEach(div => div.classList.add('d-none'));
+        document.getElementById('section-' + section).classList.remove('d-none');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalii profesor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<!-- BARA TOP ca în class_timetable.html -->
+<div class="orar-topbar px-3 py-2 mb-4">
+  <div class="container-fluid">
+    <div class="d-flex flex-wrap justify-content-between align-items-center">
+      
+      <!-- Stânga: logo + text -->
+      <div class="d-flex align-items-center mb-2 mb-md-0">
+        <div class="logo-wrapper-small mr-3">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+        </div>
+        <div>
+          <h5 class="mb-0 font-weight-bold">Liceul Alexandru cel Bun</h5>
+          <small class="text-muted">Detalii profesor</small>
+        </div>
+      </div>
+
+      <!-- Dreapta: întoarcere + logout -->
+      <div class="d-flex flex-wrap gap-2">
+        <a href="{{ url_for('rapoarte_director') }}" class="btn btn-primary btn-sm">⮐ Înapoi la Rapoarte</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary btn-sm">Logout</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONȚINUT -->
+<div class="detalii-profesor-container container">
+
+    <form method="POST" class="card-form mb-4">
+        <label for="profesor"><strong>Selectează un profesor:</strong></label>
+        <select name="profesor" id="profesor" class="form-select form-control" onchange="this.form.submit()">
+            <option value="">-- Alege un profesor --</option>
+            {% for prof in profesori %}
+                <option value="{{ prof }}" {% if date and prof == date.nume %}selected{% endif %}>{{ prof }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if date %}
+    <div class="card-info mb-3">
+        <p><strong>Nume:</strong> {{ date.nume }}</p>
+        <p><strong>Total ore / săptămână:</strong> {{ date.total_ore }}</p>
+    </div>
+
+    <div class="card-table table-responsive">
+        <table class="table table-bordered table-hover text-center align-middle">
+            <thead class="thead-light">
+                <tr>
+                    <th>Ziua</th>
+                    <th>Ora</th>
+                    <th>Clasa</th>
+                    <th>Materie</th>
+                    <th>Sala</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cls, zi, sala, materie, ora in date.program %}
+                <tr>
+                    <td>{{ zi }}</td>
+                    <td>{{ ora }}</td>
+                    <td>{{ cls }}</td>
+                    <td>{{ materie }}</td>
+                    <td>{{ sala }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>

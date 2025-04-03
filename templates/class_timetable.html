@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <!-- AICI -->
+  <title>Orar Clasă {{ class_name }}</title>
+  <!-- Folosim Bootstrap pentru un design rapid -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  {% set is_admin = session.get('role') == 'admin' %}
+  <div class="orar-topbar px-3 py-2 mb-4">
+    <div class="container-fluid">
+      <div class="d-flex flex-wrap justify-content-between align-items-center">
+        
+        <!-- Stânga: logo + nume liceu -->
+        <div class="d-flex align-items-center mb-2 mb-md-0">
+          <div class="logo-wrapper-small mr-3">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+          </div>
+          <div>
+            <h5 class="mb-0 font-weight-bold">Liceul Alexandru cel Bun</h5>
+            <small class="text-muted">Orar pentru clasa {{ class_name }}</small>
+          </div>
+        </div>
+  
+        <!-- Dreapta: butoane -->
+<!-- Dreapta: utilizator + butoane -->
+<div class="d-flex flex-column align-items-end">
+  <span class="user-badge-top">👤 {{ session.get('user') }} — {{ session.get('role') }}</span>
+  <div class="d-flex flex-wrap gap-2 mt-1">
+    {% if session.get('role') == 'profesor' %}
+      <a href="{{ url_for('profesor_ore') }}" class="btn btn-info btn-sm">Orele mele</a>
+    {% endif %}
+    <a href="{{ url_for('export_pdf_class', class_name=class_name) }}" class="btn btn-outline-primary btn-sm">PDF</a>
+    <a href="{{ url_for('export_excel_class', class_name=class_name) }}" class="btn btn-outline-success btn-sm">Excel</a>
+    {% if session.get('role') != 'student' %}
+      <a href="{{ url_for('index') }}" class="btn btn-primary btn-sm">⮐ Înapoi la orarul general</a>
+    {% endif %}
+    <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary btn-sm">Logout</a>
+  </div>
+</div>
+
+  
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  
+  
+  
+  <div class="text-center mb-4">
+    <h4 class="orar-subtitle mb-1">Orar pentru clasa {{ class_name }}</h4>
+    <h5 class="orar-subtitle2">An școlar 2024‑2025</h5>
+  </div>
+  
+  
+
+    <!-- Tabel orar (ore pe rând, zile pe coloană) -->
+    <div class="table-orar-clasa table-responsive" style="overflow-x: auto;">
+      <table class="table table-bordered table-hover text-center align-middle" style="min-width: 700px;">
+    
+        <thead class="thead-light">
+          <tr>
+            <th>Ora</th>
+            {% for day in days %}
+              <th>{{ day }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for h in hours %}
+            <tr>
+              <!-- Intervalul orar -->
+              <td class="font-weight-bold">{{ hour_labels[h] }}</td>
+              <!-- Pentru fiecare zi, afișăm materie / sală / profesor -->
+              {% for d in days %}
+              {% set cell = timetable[h][d] %}
+              {% set prof = session.get('user') %}
+              <td class="{% if cell and cell[1] == prof %}highlight-profesor{% endif %}">
+                {% if cell %}
+                  {{ cell[0] }}<br>
+                  {{ cell[2] }}<br>
+                  {{ cell[1] }}
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+              
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Buton de întoarcere la orarul general -->
+    {% if session.get('role') != 'student' %}
+ 
+  {% endif %}
+
+  </div>
+
+  <!-- Scripturi Bootstrap -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

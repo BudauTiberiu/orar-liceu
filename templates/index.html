@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>Orar General - Liceu</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="orar-topbar px-4 py-3 mt-3 mb-4 shadow rounded bg-white">
+    <div class="container-fluid">
+      <div class="row align-items-center">
+        
+        <!-- Stânga: Logo și Titlu -->
+        <div class="col-md-6 d-flex align-items-center">
+          <div class="logo-wrapper-small">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="height: 70px; width: 70px; object-fit: contain;">
+          </div>
+          <div class="ml-3">
+            <h5 class="mb-0 font-weight-bold">Liceul Alexandru cel Bun</h5>
+            <small class="text-muted">Orarul liceului</small>
+          </div>
+        </div>
+        
+        <!-- Dreapta: Badge și Butoane -->
+        <div class="col-md-6">
+          <!-- Rândul superior: Badge utilizator -->
+          <div class="d-flex justify-content-end mb-2">
+            <span class="user-badge-top">👤 {{ session.get('user') }} — {{ session.get('role') }}</span>
+          </div>
+          <!-- Rândul inferior: Butoane -->
+          <div class="d-flex flex-wrap justify-content-end gap-2">
+            {% if session.get('role') in ['admin', 'profesor', 'director'] %}
+              <button id="fullscreenBtn" class="btn btn-secondary btn-sm">Fullscreen</button>
+            {% endif %}
+    
+            {% if session.get('role') == 'profesor' %}
+              <a href="{{ url_for('profesor_ore') }}" class="btn btn-info btn-sm">Orele mele</a>
+            {% endif %}
+    
+            <!-- Dropdown Alege clasă -->
+            <div class="dropdown">
+              <button class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown">
+                Alege clasă
+              </button>
+              <div class="dropdown-menu">
+                {% for c in classes %}
+                  <a class="dropdown-item" href="{{ url_for('class_timetable', class_name=c) }}">{{ c }}</a>
+                {% endfor %}
+              </div>
+            </div>
+    
+            <!-- Dropdown Export Orar -->
+            <div class="dropdown">
+              <button class="btn btn-outline-primary btn-sm dropdown-toggle" data-toggle="dropdown">
+                Exportă Orar
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="{{ url_for('export_pdf') }}">📄 PDF</a>
+                <a class="dropdown-item" href="{{ url_for('export_excel') }}">📊 Excel</a>
+              </div>
+            </div>
+    
+            {% if session.get('role') == 'admin' %}
+              <button id="resetFull" class="btn btn-danger btn-sm">Regenerare orar</button>
+              <a href="{{ url_for('admin_panel') }}" class="btn btn-outline-dark btn-sm">⚙️ Panou Admin</a>
+            {% endif %}
+    
+            {% if session.get('role') == 'director' %}
+              <a href="{{ url_for('rapoarte_director') }}" class="btn btn-outline-dark btn-sm">📊 Rapoarte</a>
+            {% endif %}
+    
+            <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary btn-sm">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  <div class="container-fluid">
+    <!-- Dicționar de culori pentru zile (exemplu pastel) -->
+    {% set day_colors = {
+      'Luni': '#FFEFD5',
+      'Marți': '#E6E6FA',
+      'Miercuri': '#FFFACD',
+      'Joi': '#D1F7D1',
+      'Vineri': '#FFD5D5'
+    } %}
+
+    {% if session.get('role') != 'student' %}
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover text-center zoom-out-pe-mobil">
+    
+        <!-- Primul rând de antet: Clasă + (5 zile, fiecare cu colspan=7) -->
+        <thead class="thead-light">
+          <tr>
+            <th rowspan="2" class="align-middle">Clasă</th>
+            {% for day in days %}
+               <th colspan="6" class="align-middle" style="background-color: {{ day_colors[day] }};">
+              {{ day }}
+              </th>
+            {% endfor %}
+          </tr>
+          <!-- Al doilea rând de antet: Orele 1..7 pentru fiecare zi -->
+          <tr>
+            {% for day in days %}
+              {% for hr in hours %}
+                <th style="background-color: {{ day_colors[day] }};">{{ hr }}</th>
+              {% endfor %}
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for cls in classes %}
+            <tr>
+              <!-- Prima coloană: numele clasei -->
+              <td class="font-weight-bold">{{ cls }}</td>
+
+              <!-- Pentru fiecare zi, fiecare oră -->
+              {% for day in days %}
+                {% for hr in hours %}
+                  {% set cell = timetable.get((cls, day, hr)) %}
+                  {# Adăugăm un stil cu background + border mai gros după ultima oră #}
+                  <td style="
+                      background-color: {{ day_colors[day] }};
+                      {% if hr == 7 %} border-right: 4px solid #000; {% endif %}
+                  ">
+                          {% if cell %}
+                          {% if is_admin %}
+                            <span class="editable"
+                                  data-day="{{ day }}"
+                                  data-hour="{{ hr }}"
+                                  data-class="{{ cls }}">
+                              {{ cell[0] }} - {{ cell[1] }} ({{ cell[2] }})
+                            </span>
+                          {% else %}
+                            {{ cell[0] }} - {{ cell[1] }} ({{ cell[2] }})
+                          {% endif %}
+                        {% else %}
+                          -
+                        {% endif %}
+                        
+                
+                  </td>
+                {% endfor %}
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+
+  
+    
+
+
+  <!-- Modal pentru editare -->
+  <!-- Modal pentru editare îmbunătățită -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <form id="editForm" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel">Editează Orar</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Închide">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Hidden fields pentru a reține contextul celulei -->
+        <input type="hidden" id="modal-day" name="day">
+        <input type="hidden" id="modal-hour" name="hour">
+        <input type="hidden" id="modal-class" name="class">
+        <div class="form-group">
+          <label for="modal-subject">Materie:</label>
+          <input type="text" class="form-control" id="modal-subject" name="subject" readonly>
+        </div>
+        <div class="form-group">
+          <label for="modal-teacher">Profesor:</label>
+          <select class="form-control" id="modal-teacher" name="teacher" required></select>
+        </div>
+        <div class="form-group">
+          <label for="modal-room">Sală:</label>
+          <select class="form-control" id="modal-room" name="room" required></select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Anulează</button>
+        <button type="submit" class="btn btn-primary">Salvează</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+  <!-- Scripturi Bootstrap și custom -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    // Când se face click pe o celulă editabilă
+    document.querySelectorAll('.editable').forEach(cell => {
+      cell.addEventListener('click', () => {
+        let text = cell.innerText.split(' - ');
+        let subject = text[0].trim();
+        let teacherRoom = text[1] ? text[1].split(' (') : ['', ''];
+        let teacher = teacherRoom[0].trim();
+        let room = teacherRoom[1] ? teacherRoom[1].replace(')', '').trim() : '';
+
+        document.getElementById('modal-day').value = cell.dataset.day;
+        document.getElementById('modal-hour').value = cell.dataset.hour;
+        document.getElementById('modal-class').value = cell.dataset.class;
+        document.getElementById('modal-subject').value = subject;
+        document.getElementById('modal-teacher').value = teacher;
+        document.getElementById('modal-room').value = room;
+
+        $('#editModal').modal('show');
+      });
+    });
+
+    // Salvarea modificărilor
+    document.getElementById('editForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new URLSearchParams(new FormData(this)).toString();
+      fetch('/edit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData
+      }).then(response => {
+        if(response.ok) {
+          location.reload();
+        }
+      });
+    });
+
+
+
+
+ // Când se face click pe o celulă editabilă din orarul general
+ document.querySelectorAll('.editable').forEach(cell => {
+  cell.addEventListener('click', function() {
+    // Extrage datele din dataset-ul celulei
+    const day = this.dataset.day;
+    const hour = this.dataset.hour;
+    const cls = this.dataset.class;
+    const text = this.innerText.split('\n');
+    const subject = text[0].trim();
+    
+    // Populează câmpurile ascunse ale formularului modal
+    document.getElementById('modal-day').value = day;
+    document.getElementById('modal-hour').value = hour;
+    document.getElementById('modal-class').value = cls;
+    document.getElementById('modal-subject').value = subject;
+    
+    // Solicită opțiunile disponibile pentru profesor și sală
+    fetch(`/available_options?subject=${encodeURIComponent(subject)}&day=${encodeURIComponent(day)}&hour=${hour}`)
+      .then(response => response.json())
+      .then(data => {
+        const teacherSelect = document.getElementById('modal-teacher');
+        const roomSelect = document.getElementById('modal-room');
+        teacherSelect.innerHTML = '';
+        roomSelect.innerHTML = '';
+        
+        // Populează dropdown-ul de profesori
+        data.teachers.forEach(function(prof) {
+          const option = document.createElement('option');
+          option.value = prof;
+          option.text = prof;
+          teacherSelect.appendChild(option);
+        });
+        // Populează dropdown-ul de săli
+        data.rooms.forEach(function(sala) {
+          const option = document.createElement('option');
+          option.value = sala;
+          option.text = sala;
+          roomSelect.appendChild(option);
+        });
+        // Deschide modalul
+        $('#editModal').modal('show');
+      });
+  });
+});
+
+// La trimiterea formularului de editare
+document.getElementById('editForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const formData = new URLSearchParams(new FormData(this)).toString();
+  fetch('/edit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: formData
+  }).then(response => {
+    if(response.ok) {
+      location.reload(); // reîncărcăm pagina pentru a vedea modificările
+    }
+  });
+});
+
+// Butonul "Reset Full" – trimite o cerere POST la endpoint-ul /reset_timetable
+document.getElementById('resetFull').addEventListener('click', function() {
+  if(confirm("Sigur dorești să resetezi complet override-urile? Orarul se va regenera complet la următorul refresh.")) {
+    fetch('/reset_timetable', { method: 'POST' })
+      .then(response => response.text())
+      .then(message => {
+        alert(message);
+        location.reload();
+      });
+  }
+});
+
+  </script>
+
+
+
+  <script>
+    // Buton FULLSCREEN
+    document.querySelectorAll("#fullscreenBtn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        window.location.href = "{{ url_for('view_fullscreen') }}";
+      });
+    });
+  
+    // Buton RESET orar
+    document.querySelectorAll("#resetFull").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (confirm("Sigur dorești să resetezi complet override-urile? Orarul se va regenera complet la următorul refresh.")) {
+          fetch('/reset_timetable', { method: 'POST' })
+            .then(response => response.text())
+            .then(message => {
+              alert(message);
+              location.reload();
+            });
+        }
+      });
+    });
+  </script>
+  
+
+  <script>
+    document.getElementById("fullscreenBtn")?.addEventListener("click", function () {
+      window.open("/view_fullscreen", "_blank", "noopener,noreferrer");
+    });
+  </script>
+  
+  </body>
+  </html>
+  
+  
+</body>
+</html>
