@@ -16,12 +16,13 @@ app.secret_key = "schimba_cheia_secreta"
 
 def get_mysql_connection():
     return mysql.connector.connect(
-        host=os.environ.get('DB_HOST'),
-        user=os.environ.get('DB_USER'),
-        password=os.environ.get('DB_PASSWORD'),
-        database=os.environ.get('DB_NAME'),
-        port=int(os.environ.get('DB_PORT', 3306))
+        host="yamabiko.proxy.rlwy.net",
+        port=20612,
+        user="root",
+        password="jxuLIryhRMBdojRyAiMMnuUateyxwJnz",
+        database="liceu_orar"
     )
+
 
 
     
